@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:job_seeker/data/datasource/job_listing_datasource.dart';
 import 'package:job_seeker/domain/entity/job_listing_entity.dart';
 
 class JobFilterProvider with ChangeNotifier {
   JobFilterProvider({required this.datasource});
 
-  final JobListingDatasource datasource;
+  final dynamic datasource;
   List<JobListingEntity> _filterJobs = [];
   bool _isLoading = false;
   String? _error;

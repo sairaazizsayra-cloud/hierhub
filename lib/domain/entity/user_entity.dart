@@ -1,3 +1,5 @@
+import 'package:job_seeker/core/user_role.dart';
+
 class UserEntity {
   final String id;
   final String name;
@@ -10,38 +12,54 @@ class UserEntity {
   final String dateOfBirth;
   final String jobProfile;
   final String skills;
+  final String role;
+  final String companyName;
+  final String organisation;
+  final String location;
+  final String description;
 
-  // Constructor
-  UserEntity(
-      {required this.id,
-      required this.name,
-      required this.email,
-      required this.skills,
-      required this.lastName,
-      required this.address,
-      required this.avatar,
-      required this.resumeUrl,
-      required this.dateOfBirth,
-      required this.jobProfile,
-      required this.phoneNo});
+  UserEntity({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.skills,
+    required this.lastName,
+    required this.address,
+    required this.avatar,
+    required this.resumeUrl,
+    required this.dateOfBirth,
+    required this.jobProfile,
+    required this.phoneNo,
+    this.role = UserRole.jobSeeker,
+    this.companyName = '',
+    this.organisation = '',
+    this.location = '',
+    this.description = '',
+  });
+
+  bool get isRecruiter => UserRole.isRecruiter(role);
 
   factory UserEntity.fromJson(Map<String, dynamic> json) {
     return UserEntity(
-      id: json["id"],
-      name: json["first_name"],
-      email: json["email"],
-      skills: json["skills"],
-      jobProfile: json["job_profile"],
-      address: json["address"],
-      avatar: json["avatar"],
-      dateOfBirth: json["date_of_birth"],
-      lastName: json["last_name"],
-      resumeUrl: json["resume_url"],
-      phoneNo: json["phone_no"],
+      id: (json['id'] ?? '').toString(),
+      name: (json['first_name'] ?? '').toString(),
+      email: (json['email'] ?? '').toString(),
+      skills: (json['skills'] ?? '').toString(),
+      jobProfile: (json['job_profile'] ?? '').toString(),
+      address: (json['address'] ?? '').toString(),
+      avatar: (json['avatar'] ?? '').toString(),
+      dateOfBirth: (json['date_of_birth'] ?? '').toString(),
+      lastName: (json['last_name'] ?? '').toString(),
+      resumeUrl: (json['resume_url'] ?? '').toString(),
+      phoneNo: (json['phone_no'] ?? '').toString(),
+      role: (json['role'] ?? UserRole.jobSeeker).toString(),
+      companyName: (json['company_name'] ?? '').toString(),
+      organisation: (json['organisation'] ?? json['company_name'] ?? '').toString(),
+      location: (json['location'] ?? json['address'] ?? '').toString(),
+      description: (json['description'] ?? '').toString(),
     );
   }
 
-  // Method to convert a JobListing object into JSON (useful for inserting data)
   Map<String, dynamic> toJson() {
     return {
       "id": id,
@@ -55,6 +73,11 @@ class UserEntity {
       "last_name": lastName,
       "resume_url": resumeUrl,
       "phone_no": phoneNo,
+      "role": role,
+      "company_name": companyName,
+      "organisation": organisation,
+      "location": location,
+      "description": description,
     };
   }
 
@@ -70,6 +93,11 @@ class UserEntity {
     String? lastName,
     String? resumeUrl,
     String? phoneNo,
+    String? role,
+    String? companyName,
+    String? organisation,
+    String? location,
+    String? description,
   }) {
     return UserEntity(
       id: id ?? this.id,
@@ -83,6 +111,11 @@ class UserEntity {
       lastName: lastName ?? this.lastName,
       resumeUrl: resumeUrl ?? this.resumeUrl,
       phoneNo: phoneNo ?? this.phoneNo,
+      role: role ?? this.role,
+      companyName: companyName ?? this.companyName,
+      organisation: organisation ?? this.organisation,
+      location: location ?? this.location,
+      description: description ?? this.description,
     );
   }
 }

@@ -5,7 +5,8 @@ import 'package:job_seeker/prsentation/chat/widget/top_chat_bar_widget.dart';
 import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final bool asRecruiter;
+  const ChatPage({super.key, this.asRecruiter = false});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -16,7 +17,11 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
 
-    Future.microtask(() => context.read<ChatProvider>().fetchRecuiterProfile());
+    Future.microtask(
+      () => context.read<ChatProvider>().fetchRecuiterProfile(
+            asRecruiter: widget.asRecruiter,
+          ),
+    );
   }
 
   @override
@@ -24,28 +29,33 @@ class _ChatPageState extends State<ChatPage> {
     final chatProvider = context.watch<ChatProvider>();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
-          // Header Text
-          const TopChatBarWidget(),
-          // const SizedBox(height: 20),
-
-          // Chat List Section
-          if (chatProvider.isLoading)
-            const Center(child: CircularProgressIndicator())
-          else if (chatProvider.recuitersList.isEmpty)
-            const Text("No chats found.")
-          else
-            Column(
-              children: chatProvider.recuitersList
-                  .map((e) => ChatListWidget(
-                        roomEntity: e,
-                      ))
-                  .toList(),
-            )
+          TopChatBarWidget(asRecruiter: widget.asRecruiter),
+          const SizedBox(height: 12),
+          Expanded(
+            child: chatProvider.isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : chatProvider.recuitersList.isEmpty
+                    ? Center(
+                        child: Text(
+                          widget.asRecruiter
+                              ? 'No job applicant chats yet.'
+                              : 'No recruiter chats yet. Apply to a job to start chatting.',
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: chatProvider.recuitersList.length,
+                        itemBuilder: (context, index) {
+                          return ChatListWidget(
+                            roomEntity: chatProvider.recuitersList[index],
+                            asRecruiter: widget.asRecruiter,
+                          );
+                        },
+                      ),
+          ),
         ],
       ),
     );

@@ -1,0 +1,32 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "hirehub-app-de9ad",
+          "appId": "1:220903275485:android:cb693f2ae64a652f9d9434",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "hirehub-app-de9ad",
+          "configurations": {
+            "android": "1:220903275485:android:cb693f2ae64a652f9d9434",
+            "ios": "1:220903275485:ios:4cea6e20feb113719d9434",
+            "web": "1:220903275485:web:44081af556963a119d9434"
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

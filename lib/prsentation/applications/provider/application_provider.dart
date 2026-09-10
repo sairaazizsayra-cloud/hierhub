@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:job_seeker/data/datasource/application_datasource.dart';
 import 'package:job_seeker/domain/entity/applications_entity.dart';
 
 class ApplicationProvider extends ChangeNotifier {
   List<ApplicationEntity> applications = [];
   bool isLoading = false;
   String? error;
-  ApplicationDatasource datasource;
+  final dynamic datasource;
   ApplicationProvider({required this.datasource});
   StreamSubscription<List<ApplicationStatusEntity>>? _subscription;
 

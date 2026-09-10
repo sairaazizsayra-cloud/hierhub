@@ -1,5 +1,5 @@
 name: job_seeker
-description: "A new Flutter project."
+description: "HireHub - Job seeking app powered by Firebase"
 
 version: 1.0.0+1
 
@@ -10,42 +10,51 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   cupertino_icons: ^1.0.6
-  supabase_flutter: ^2.8.4
-  provider: 
+  firebase_core: ^3.8.1
+  firebase_auth: ^5.3.4
+  cloud_firestore: ^5.6.0
+  firebase_storage: ^12.4.0
+  provider:
   get_it:
-  fluttertoast:
-  file_picker: ^6.1.1
-  open_file: ^3.3.2
+  fluttertoast: 8.2.14
+  file_picker: ^8.1.2
   url_launcher: ^6.2.5
-  flutter_dotenv: 
+  image_picker: ^1.1.2
+  share_plus: ^10.1.2
+  intl: ^0.19.0
+  shared_preferences: ^2.3.3
+
+dependency_overrides:
+  path_provider_android: 2.2.15
+  url_launcher_android: 6.3.15
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
   flutter_lints: ^3.0.0
   flutter_native_splash: ^2.4.0
-  
-
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
-
   uses-material-design: true
-
   assets:
-    - .env
     - assets/logo.png
 
-
 flutter_native_splash:
-  color: "#ffffff"              # Background color (use white for transparency effect)
-  image: assets/logo.png        # Your transparent PNG path
+  color: "#ffffff"
+  image: assets/logo.png
   android: true
   ios: true
   web: false
   android_12:
-    image: assets/logo.png      # Your transparent PNG path
-    color: "#ffffff"            # Background color (use white for transparency effect)
+    image: assets/logo.png
+    color: "#ffffff"
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/app_icon.png"
+  remove_alpha_ios: true

@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:job_seeker/core/theme/app_theme.dart';
 import 'package:job_seeker/core/widget/my_custom_icon_button.dart';
+import 'package:job_seeker/prsentation/settings/chat_settings_page.dart';
 
 class TopChatBarWidget extends StatelessWidget {
-  const TopChatBarWidget({super.key});
+  final bool asRecruiter;
+  const TopChatBarWidget({super.key, this.asRecruiter = false});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(15),
-      height: 150,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      padding: const EdgeInsets.all(20),
+      decoration: AppTheme.gradientHeader,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
-            "Connect with\nRecruiters",
-            style: TextStyle(
-              // color: Colors.white,
-              fontSize: 30,
+          Text(
+            asRecruiter
+                ? "Chat with\njob applicants"
+                : "Chat about\njobs",
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
             ),
           ),
-          MyCustomIconButton(icon: Icons.settings, callback: () {})
+          MyCustomIconButton(
+            icon: Icons.settings,
+            callback: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ChatSettingsPage(),
+              ),
+            ),
+          ),
         ],
       ),
     );

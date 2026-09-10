@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:job_seeker/core/user_role.dart';
 import 'package:job_seeker/domain/entity/user_entity.dart';
-import 'package:job_seeker/prsentation/auth/page/auth_gate.dart';
 import 'package:job_seeker/prsentation/auth/provider/auth_provider.dart';
 import 'package:job_seeker/prsentation/auth/widgets/auth_action_button.dart';
 import 'package:job_seeker/prsentation/auth/widgets/auth_header_widget.dart';
@@ -25,6 +25,10 @@ class _UserFillUpFormPageState extends State<UserFillUpFormPage> {
   late TextEditingController _dobDDController;
   late TextEditingController _dobMMController;
   late TextEditingController _dobYYController;
+  late TextEditingController _companyController;
+  late TextEditingController _organisationController;
+  late TextEditingController _locationController;
+  late TextEditingController _descriptionController;
 
   @override
   void initState() {
@@ -39,6 +43,10 @@ class _UserFillUpFormPageState extends State<UserFillUpFormPage> {
     _dobDDController = TextEditingController();
     _dobMMController = TextEditingController();
     _dobYYController = TextEditingController();
+    _companyController = TextEditingController();
+    _organisationController = TextEditingController();
+    _locationController = TextEditingController();
+    _descriptionController = TextEditingController();
   }
 
   @override
@@ -55,6 +63,10 @@ class _UserFillUpFormPageState extends State<UserFillUpFormPage> {
     _dobDDController.dispose();
     _dobMMController.dispose();
     _dobYYController.dispose();
+    _companyController.dispose();
+    _organisationController.dispose();
+    _locationController.dispose();
+    _descriptionController.dispose();
   }
 
   @override
@@ -71,14 +83,14 @@ class _UserFillUpFormPageState extends State<UserFillUpFormPage> {
                 height: 80,
               ),
               const AuthHeaderWidget(
-                text: "Create an Profile",
+                text: "Tell us about your job profile",
                 title: "Profile",
               ),
               const SizedBox(height: 20),
               Expanded(
                 child: SingleChildScrollView(
                   child: Container(
-                    height: 900,
+                    constraints: const BoxConstraints(minHeight: 700),
                     decoration: const BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.only(
@@ -157,18 +169,44 @@ class _UserFillUpFormPageState extends State<UserFillUpFormPage> {
                                     ),
                                   ],
                                 ),
-                                // const Text("Job Profile"),
                                 MyCustomInputFiled(
-                                    text: "Job Profile",
+                                    text: context.watch<AuthProvider>().isRecruiter
+                                        ? "Hiring role"
+                                        : "Desired job profile",
                                     textEditingController:
                                         _jobProfileController),
                                 const SizedBox(
                                   height: 10,
                                 ),
-                                // const Text("Skills"),
                                 MyCustomInputFiled(
-                                    text: "Skills",
+                                    text: context.watch<AuthProvider>().isRecruiter
+                                        ? "Skills you hire for"
+                                        : "Job skills (Flutter, UI, ...)",
                                     textEditingController: _skillsController),
+                                if (context.watch<AuthProvider>().isRecruiter) ...[
+                                  const SizedBox(height: 10),
+                                  MyCustomInputFiled(
+                                    text: "Company name",
+                                    textEditingController: _companyController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  MyCustomInputFiled(
+                                    text: "Organisation",
+                                    textEditingController:
+                                        _organisationController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  MyCustomInputFiled(
+                                    text: "Office / job location",
+                                    textEditingController: _locationController,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  MyCustomInputFiled(
+                                    text: "Company / hiring description",
+                                    textEditingController:
+                                        _descriptionController,
+                                  ),
+                                ],
                                 const SizedBox(
                                   height: 10,
                                 ),
@@ -182,28 +220,66 @@ class _UserFillUpFormPageState extends State<UserFillUpFormPage> {
                             height: 40,
                           ),
                           AuthActionButton(
-                              text: "Create",
-                              onPressed: () {
+                              text: "Create Profile",
+                              onPressed: () async {
+                                if (_nameController.text.trim().isEmpty ||
+                                    _lastController.text.trim().isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Please enter your first and last name',
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                final auth = context.read<AuthProvider>();
+                                if (auth.isRecruiter &&
+                                    _companyController.text.trim().isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Please enter your company name to post jobs',
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
                                 final dob =
                                     "${_dobDDController.text}-${_dobMMController.text}-${_dobYYController.text}";
-                                context.read<AuthProvider>().createProfile(
-                                    UserEntity(
-                                        id: "",
-                                        name: _nameController.text,
-                                        email: "",
-                                        skills: _skillsController.text,
-                                        lastName: _lastController.text,
-                                        address: _addressController.text,
-                                        avatar: "",
-                                        resumeUrl: "",
-                                        dateOfBirth: dob,
-                                        jobProfile: _jobProfileController.text,
-                                        phoneNo: _phoneNoController.text));
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const AuthGate()),
-                                );
+                                try {
+                                  await auth.createProfile(UserEntity(
+                                    id: '',
+                                    name: _nameController.text.trim(),
+                                    email: '',
+                                    skills: _skillsController.text.trim(),
+                                    lastName: _lastController.text.trim(),
+                                    address: _addressController.text.trim(),
+                                    avatar: '',
+                                    resumeUrl: '',
+                                    dateOfBirth: dob,
+                                    jobProfile:
+                                        _jobProfileController.text.trim(),
+                                    phoneNo: _phoneNoController.text.trim(),
+                                    role: auth.user?.role ?? UserRole.jobSeeker,
+                                    companyName: _companyController.text.trim(),
+                                    organisation:
+                                        _organisationController.text.trim().isEmpty
+                                            ? _companyController.text.trim()
+                                            : _organisationController.text.trim(),
+                                    location: _locationController.text.trim(),
+                                    description:
+                                        _descriptionController.text.trim(),
+                                  ));
+                                  if (!context.mounted) return;
+                                  Navigator.of(context)
+                                      .popUntil((route) => route.isFirst);
+                                } catch (e) {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(e.toString())),
+                                  );
+                                }
                               }),
                         ],
                       ),

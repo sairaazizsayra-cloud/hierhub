@@ -1,18 +1,19 @@
 import 'package:flutter/foundation.dart';
-import 'package:job_seeker/data/datasource/job_listing_datasource.dart';
 import 'package:job_seeker/domain/entity/job_listing_entity.dart';
 
 class JobDetailsProvider extends ChangeNotifier {
   JobDetailsProvider({required this.datasource});
 
-  final JobListingDatasource datasource;
+  final dynamic datasource;
   JobListingEntity? _job;
 
   bool _isLoading = false;
+  bool _isApplying = false;
   String? _error;
 
   JobListingEntity? get job => _job;
   bool get isLoading => _isLoading;
+  bool get isApplying => _isApplying;
   String? get error => _error;
 
   Future<void> fetchJob(id) async {
@@ -31,7 +32,7 @@ class JobDetailsProvider extends ChangeNotifier {
   }
 
   Future<void> applyJobs(id, resumeUrl) async {
-    _isLoading = true;
+    _isApplying = true;
     _error = null;
     notifyListeners();
 
@@ -39,8 +40,9 @@ class JobDetailsProvider extends ChangeNotifier {
       await datasource.applyJobs(id, resumeUrl);
     } catch (e) {
       _error = e.toString();
+      rethrow;
     } finally {
-      _isLoading = false;
+      _isApplying = false;
       notifyListeners();
     }
   }

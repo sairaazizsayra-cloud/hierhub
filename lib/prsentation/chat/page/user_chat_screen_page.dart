@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:job_seeker/core/theme/app_theme.dart';
 import 'package:job_seeker/domain/entity/message_entity.dart';
 import 'package:job_seeker/domain/entity/room_entity.dart';
 import 'package:job_seeker/prsentation/auth/widgets/my_custom_input_filed.dart';
@@ -7,8 +9,13 @@ import 'package:provider/provider.dart';
 
 class ChatScreenPage extends StatefulWidget {
   final RoomEntity roomEntity;
+  final bool asRecruiter;
 
-  const ChatScreenPage({super.key, required this.roomEntity});
+  const ChatScreenPage({
+    super.key,
+    required this.roomEntity,
+    this.asRecruiter = false,
+  });
 
   @override
   State<ChatScreenPage> createState() => _ChatScreenPageState();
@@ -22,18 +29,13 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
     super.initState();
     final messageProvider = context.read<MessageProvider>();
     final roomId = widget.roomEntity.id;
-
-    // Fetch existing messages
     messageProvider.fetchMessages(roomId);
-
-    // Start listening for new incoming messages
     messageProvider.subscribeToMessages(roomId);
   }
 
   @override
   void dispose() {
     textEditingController.dispose();
-    context.read<MessageProvider>().dispose();
     super.dispose();
   }
 
@@ -46,9 +48,21 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.roomEntity.recuiterProfile.organisation),
-            Text(widget.roomEntity.recuiterProfile.name,
-                style: const TextStyle(fontSize: 14)),
+            Text(
+              widget.asRecruiter
+                  ? (widget.roomEntity.seekerName.isEmpty
+                      ? 'Job applicant'
+                      : widget.roomEntity.seekerName)
+                  : widget.roomEntity.recuiterProfile.organisation,
+            ),
+            Text(
+              widget.asRecruiter
+                  ? (widget.roomEntity.jobTitle.isEmpty
+                      ? 'Job chat'
+                      : '${widget.roomEntity.jobTitle} job')
+                  : widget.roomEntity.recuiterProfile.name,
+              style: const TextStyle(fontSize: 14),
+            ),
           ],
         ),
       ),
@@ -71,9 +85,9 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
       padding: const EdgeInsets.all(8),
       itemCount: messages.length,
       itemBuilder: (context, index) {
-        final msg = messages[messages.length - 1 - index]; // reverse order
-        final isMine = msg.senderId !=
-            widget.roomEntity.recuiterProfile.id; // change logic if needed
+        final msg = messages[messages.length - 1 - index];
+        final myId = FirebaseAuth.instance.currentUser?.uid;
+        final isMine = msg.senderId == myId;
 
         return Align(
           alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
@@ -81,7 +95,9 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.symmetric(vertical: 5),
             decoration: BoxDecoration(
-              color: isMine ? Colors.purple[100] : Colors.grey[300],
+              color: isMine
+                  ? AppTheme.primary.withValues(alpha: 0.15)
+                  : Colors.grey[300],
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(msg.content),
@@ -96,33 +112,30 @@ class _ChatScreenPageState extends State<ChatScreenPage> {
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
       child: Row(
         children: [
-          const SizedBox(
-            width: 15,
-          ),
+          const SizedBox(width: 15),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.grey.shade300)),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
               child: MyCustomInputFiled(
-                text: "Send a message",
+                text: 'Send a message',
                 textEditingController: textEditingController,
               ),
             ),
           ),
-          const SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
           IconButton(
             onPressed: () {
               final content = textEditingController.text.trim();
               if (content.isNotEmpty) {
-                final messageProvider = context.read<MessageProvider>();
-                messageProvider.sendMessage(
-                  content: content,
-                  receiverId: widget.roomEntity.recuiterProfile.id,
-                  roomId: widget.roomEntity.id,
-                );
+                final myId = FirebaseAuth.instance.currentUser?.uid ?? '';
+                context.read<MessageProvider>().sendMessage(
+                      content: content,
+                      receiverId: widget.roomEntity.peerIdFor(myId),
+                      roomId: widget.roomEntity.id,
+                    );
                 textEditingController.clear();
               }
             },

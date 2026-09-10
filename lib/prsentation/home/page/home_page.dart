@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:job_seeker/prsentation/applications/page/applications_page.dart';
+import 'package:job_seeker/prsentation/applications/provider/application_provider.dart';
 import 'package:job_seeker/prsentation/bookmark/page/bookmark_page.dart';
 import 'package:job_seeker/prsentation/bookmark/provider/bookmark_jobs_provider.dart';
 import 'package:job_seeker/prsentation/chat/page/chat_page.dart';
 import 'package:job_seeker/prsentation/explore/page/explorer_page.dart';
 import 'package:job_seeker/prsentation/home/provider/filter_jobs_provider.dart';
 import 'package:job_seeker/prsentation/home/provider/job_list_provider.dart';
+import 'package:job_seeker/prsentation/home/widgets/job_categories_section.dart';
+import 'package:job_seeker/prsentation/home/widgets/job_stats_banner.dart';
+import 'package:job_seeker/prsentation/home/widgets/matched_jobs_section.dart';
 import 'package:job_seeker/prsentation/home/widgets/recent_job_section_widget.dart';
 import 'package:job_seeker/prsentation/home/widgets/suggested_section_widgets.dart';
 import 'package:job_seeker/prsentation/home/widgets/top_bar.dart';
@@ -19,15 +23,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late int _selectedIndex = 0;
+  int _selectedIndex = 0;
 
-  late List<Widget> tabList = [
-    homeWidget(),
-    const ExplorerPage(),
-    const BookMarkPage(),
-    const ChatPage(),
-    const ApplicationsPage(),
-  ];
+  void _goToExploreTab() {
+    setState(() => _selectedIndex = 1);
+  }
 
   @override
   void initState() {
@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Provider.of<JobFilterProvider>(context, listen: false).fetchFilterJobs();
       Provider.of<BookMarkJobProvider>(context, listen: false)
           .fetchBookMarkJobs();
+      context.read<ApplicationProvider>().fetchApplication().catchError((_) {});
     });
   }
 
@@ -45,36 +46,41 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: tabList[_selectedIndex],
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            _homeTab(),
+            const ExplorerPage(),
+            const BookMarkPage(),
+            const ChatPage(),
+            const ApplicationsPage(),
+          ],
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(),
     );
   }
 
-  Widget homeWidget() {
-    return const Padding(
-      padding: EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // TopBAR
-          TopBar(),
-
-          SizedBox(height: 20),
-
-          // Searh bar
-          // SearchBarWidget(),
-
-          // Suggested Job Selection
-          SuggestedJobsSection(),
-
-          SizedBox(height: 20),
-
-          // Recent Job selection
-          RecentJobsSection(),
-        ],
+  Widget _homeTab() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const TopBar(),
+            const SizedBox(height: 16),
+            const JobStatsBanner(),
+            const SizedBox(height: 20),
+            JobCategoriesSection(onCategoryTap: (_) => _goToExploreTab()),
+            const SizedBox(height: 20),
+            MatchedJobsSection(onSeeAll: _goToExploreTab),
+            const SizedBox(height: 20),
+            SuggestedJobsSection(onSeeAll: _goToExploreTab),
+            const SizedBox(height: 20),
+            RecentJobsSection(onSeeAll: _goToExploreTab),
+          ],
+        ),
       ),
     );
   }

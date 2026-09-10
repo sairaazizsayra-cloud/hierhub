@@ -1,126 +1,41 @@
+# HireHub – Firebase Auth + Firestore
 
-# 📱 HireHub – Flutter Job-Seeking App
+Flutter job app using project **hirehub-app-de9ad**.
 
-**HireHub** is a modern, mobile-first job-seeking application built with Flutter and powered by [Supabase](https://supabase.com). It provides a streamlined experience for job seekers to explore job listings, track applications, manage profiles, chat with recruiters, and upload resumes — all from their phone.
+## Already done
+- Flutter apps registered (Android / iOS / Web)
+- `lib/firebase_options.dart` generated
+- **Email/Password Authentication enabled** (`firebase deploy --only auth`)
+- App code uses Firebase Auth + Firestore only
 
----
+## You must do once (Firestore API)
+Firestore API is not enabled yet on this Google Cloud project.
 
-## 🚀 Features
-
-### 👤 Authentication
-- Secure sign-up and sign-in
-- Session management using Supabase
-
-### 🏠 Home Page
-- Displays a list of active job postings
-- Integrated with Supabase backend
-
-### 🔍 Explore Page
-- Discover additional job listings with flexible filtering
-
-### 📌 Bookmark Page
-- Save and view bookmarked job posts
-
-### 💬 Real-Time Chat
-- Connect and chat with recruiters in real-time (via Supabase Realtime)
-
-
-### 📝 Application Tracking
-- Track the status of job applications
-
-### 📄 Resume Management
-- Upload different resumes for different job applications
-
-### 👤 User Profile
-- View and update personal details
-
----
-
-## 🧑‍💼 Recruiter Panel
-
-Recruiters can post and manage jobs via a dedicated web panel built separately from the mobile app.
-
-- 🌐 **Live Recruiter Panel**:  
-  [https://hire-hub-recruiter-panel.vercel.app/recuiter](https://hire-hub-recruiter-panel.vercel.app/recuiter)
-
-- 💻 **Recruiter Panel GitHub Repository**:  
-  [https://github.com/akashpd390/hire_hub_recruiter_panel](https://github.com/akashpd390/hire_hub_recruiter_panel)
-
----
-
-## 📦 Tech Stack
-
-- Flutter
-- Supabase (Auth, Realtime, Storage, Database)
-- `provider` (State management)
-- `get_it` (Dependency injection)
-- `flutter_dotenv` (Environment variable handling)
-- `fluttertoast`, `file_picker`, `open_file`, `url_launcher`, and more
-
----
-
-## 📲 Download
-
-Download the latest **Release APK**:  
-🔗 [Release APK on GitHub](https://github.com/akashpd390/HireHub/releases)
-
----
-
-## 📷 Screenshots
-
-
-
-
-<p float="left">
-  <img src="screenshots/home.jpg" width="200" />
-  <img src="screenshots/apply.jpg" width="200" />
-  <img src="screenshots/explore.jpg" width="200" />
-  <img src="screenshots/track.jpg" width="200" />
-  <img src="screenshots/chat.jpg" width="200" />
-</p>
-
-
----
-
-## 📁 Project Structure
-
-- `lib/` – Main application code
-- `lib/data/` – Supabase data sources
-- `lib/presentation/` – UI pages and providers
-- `lib/core/` – Config and dependency injection
-
----
-
-## 🛠️ Setup Instructions
+1. Open and click **Enable**:  
+   https://console.cloud.google.com/apis/library/firestore.googleapis.com?project=hirehub-app-de9ad
+2. Create database:  
+   https://console.firebase.google.com/project/hirehub-app-de9ad/firestore  
+   → **Create database** (start in test mode, or production + deploy rules)
+3. Deploy rules from project root:
 
 ```bash
-git clone https://github.com/akashpd390/HireHub.git
-cd HireHub
-flutter pub get
+firebase deploy --only firestore:rules --project hirehub-app-de9ad
 ```
 
-Make sure your `.env` file is set up, then run the app:
+4. Restart app:
 
 ```bash
 flutter run
 ```
----
 
-## ⚙️ .env Setup Guide
+On first successful Firestore connection, sample jobs seed into `JobList`.
 
-Create a `.env` file in the root of your Flutter project:
+## Auth flow
+- **Register** → choose Job Seeker or Recruiter → Firebase Auth Email/Password → profile form
+- **Job seeker** → browse/apply to jobs, bookmarks, job applications, chat
+- **Recruiter** → post jobs, review job applicants, update hiring status, chat
+- **Login** → Firebase Auth → load profile from Firestore
+- **Reset password** → Firebase Auth email link
 
-```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-```
-
-Make sure to declare this in your `pubspec.yaml`:
-
-```yaml
-flutter:
-  assets:
-    - .env
-```
-
----
+## Collections
+See `FIREBASE_SETUP.md` for `profiles`, `JobList`, `applications`, `bookmarks`, `rooms`, `messages`.

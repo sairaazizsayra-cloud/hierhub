@@ -1,46 +1,72 @@
-import 'dart:io';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:typed_data';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:image_picker/image_picker.dart';
 
 class ResumeServiceDatasource {
-  final SupabaseClient supabase;
+  final FirebaseAuth _auth;
+  final FirebaseStorage _storage;
+  final FirebaseFirestore _db;
 
-  ResumeServiceDatasource({required this.supabase});
+  ResumeServiceDatasource({
+    FirebaseAuth? auth,
+    FirebaseStorage? storage,
+    FirebaseFirestore? firestore,
+  })  : _auth = auth ?? FirebaseAuth.instance,
+        _storage = storage ?? FirebaseStorage.instance,
+        _db = firestore ?? FirebaseFirestore.instance;
 
-  Future<String?> uploadResume(File file, String fileName) async {
-    // Pick a file
+  Future<String?> uploadResume({
+    required String fileName,
+    Uint8List? bytes,
+    String? filePath,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('User not logged in');
 
-    final user = supabase.auth.currentUser;
-    if (user == null) throw Exception("user no logged in");
-    final uniquevalue = DateTime.now().microsecond;
-    final filePath = 'resumes/${user.id}/$uniquevalue$fileName';
+    final uniqueValue = DateTime.now().microsecondsSinceEpoch;
+    final storagePath = 'resumes/${user.uid}/$uniqueValue$fileName';
+    final ref = _storage.ref().child(storagePath);
 
-    // Upload to Supabase bucket
-    await supabase.storage
-        .from('resumes') // 👈 your bucket name
-        .upload(filePath, file,
-            fileOptions: const FileOptions(
-              upsert: false,
-            ));
+    if (bytes != null && bytes.isNotEmpty) {
+      await ref.putData(bytes);
+    } else if (!kIsWeb && filePath != null && filePath.isNotEmpty) {
+      // Mobile/desktop path upload via XFile bytes fallback
+      final xfile = XFile(filePath);
+      final fileBytes = await xfile.readAsBytes();
+      await ref.putData(fileBytes);
+    } else {
+      throw Exception('No file data available. Please choose a resume again.');
+    }
 
-    // Return the public URL
-    final publicUrl = supabase.storage.from('resumes').getPublicUrl(filePath);
-    updateResumeUrlProfile(publicUrl, user.id);
-
+    final publicUrl = await ref.getDownloadURL();
+    await updateResumeUrlProfile(publicUrl, user.uid);
     return publicUrl;
   }
 
-  Future<void> updateResumeUrlProfile(String publicUrl, userId) async {
-    try {
-      await supabase
-          .from("profiles")
-          .update({
-            "resume_url": publicUrl,
-          })
-          .eq("id", userId)
-          .select()
-          .single();
-    } catch (e) {
-      rethrow;
-    }
+  Future<String> uploadAvatar(XFile imageFile) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('User not logged in');
+
+    final filePath = 'avatars/${user.uid}/profile.jpg';
+    final ref = _storage.ref().child(filePath);
+    final bytes = await imageFile.readAsBytes();
+    await ref.putData(bytes);
+    return ref.getDownloadURL();
+  }
+
+  Future<void> updateResumeUrlProfile(String publicUrl, String userId) async {
+    await _db.collection('profiles').doc(userId).set({
+      'resume_url': publicUrl,
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> updateAvatarUrl(String userId, String avatarUrl) async {
+    await _db.collection('profiles').doc(userId).set({
+      'avatar': avatarUrl,
+    }, SetOptions(merge: true));
   }
 }

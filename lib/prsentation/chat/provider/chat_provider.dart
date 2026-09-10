@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:job_seeker/data/datasource/chat_datasorce.dart';
 import 'package:job_seeker/domain/entity/room_entity.dart';
 
 class ChatProvider extends ChangeNotifier {
-  final ChatDatasource datasource;
+  final dynamic datasource;
 
   List<RoomEntity> recuitersList = [];
   String? error;
@@ -11,11 +10,13 @@ class ChatProvider extends ChangeNotifier {
 
   ChatProvider({required this.datasource});
 
-  Future<void> fetchRecuiterProfile() async {
+  Future<void> fetchRecuiterProfile({bool asRecruiter = false}) async {
     isLoading = true;
     notifyListeners();
     try {
-      final data = await datasource.fetchUsersConnection();
+      final data = await datasource.fetchUsersConnection(
+        asRecruiter: asRecruiter,
+      );
       recuitersList = data;
     } catch (e) {
       error = e.toString();

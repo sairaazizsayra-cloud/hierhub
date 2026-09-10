@@ -1,51 +1,55 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:job_seeker/core/firebase/firestore_helpers.dart';
 
 class BookmarksJobsDatasource {
-  final SupabaseClient supabase;
+  final FirebaseFirestore _db;
+  final FirebaseAuth _auth;
 
-  BookmarksJobsDatasource({required this.supabase});
+  BookmarksJobsDatasource({
+    FirebaseFirestore? firestore,
+    FirebaseAuth? auth,
+  })  : _db = firestore ?? FirebaseFirestore.instance,
+        _auth = auth ?? FirebaseAuth.instance;
 
-  Future<void> addBookmark(id) async {
-    final user = supabase.auth.currentUser;
-    try {
-      if (user == null) throw Exception("not authenticated");
-      await supabase.from('bookmarks').insert({
-        "user_id": user.id,
-        "job_post_id": id,
-      });
-    } catch (e) {
-      rethrow;
-    }
+  CollectionReference<Map<String, dynamic>> get _bookmarks =>
+      _db.collection('bookmarks');
+
+  Future<void> addBookmark(int id) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('Not authenticated');
+
+    await _bookmarks.add({
+      'user_id': user.uid,
+      'job_post_id': id,
+      'created_at': FieldValue.serverTimestamp(),
+    });
   }
 
-  Future<void> removeBookmark(id) async {
-    final user = supabase.auth.currentUser;
-    try {
-      if (user == null) throw Exception("not authenticated");
-      await supabase
-          .from('bookmarks')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('job_post_id', id);
-    } catch (e) {
-      rethrow;
+  Future<void> removeBookmark(int id) async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('Not authenticated');
+
+    final snapshot = await _bookmarks
+        .where('user_id', isEqualTo: user.uid)
+        .where('job_post_id', isEqualTo: id)
+        .get();
+
+    for (final doc in snapshot.docs) {
+      await doc.reference.delete();
     }
   }
 
   Future<List<int>> fetchBookmarks() async {
-    final user = supabase.auth.currentUser;
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('Not authenticated');
 
-    try {
-      if (user == null) throw Exception("not authenticated");
+    final response = await _bookmarks
+        .where('user_id', isEqualTo: user.uid)
+        .get();
 
-      final response = await supabase
-          .from("bookmarks")
-          .select("job_post_id")
-          .eq("user_id", user.id);
-
-      return response.map<int>((e) => e["job_post_id"] as int).toList();
-    } catch (e) {
-      rethrow;
-    }
+    return response.docs
+        .map((e) => parseIntId(e.data()['job_post_id']))
+        .toList();
   }
 }

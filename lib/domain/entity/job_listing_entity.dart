@@ -1,3 +1,6 @@
+import 'package:job_seeker/core/constants.dart';
+import 'package:job_seeker/core/firebase/firestore_helpers.dart';
+
 class JobListingEntity {
   final int id;
   final String createdAt;
@@ -12,6 +15,8 @@ class JobListingEntity {
   final String level;
   final String tags;
   final String image;
+  final String recruiterId;
+  final bool isActive;
 
   JobListingEntity({
     required this.id,
@@ -27,30 +32,31 @@ class JobListingEntity {
     required this.workingModel,
     required this.tags,
     required this.image,
+    this.recruiterId = '',
+    this.isActive = true,
   });
 
-  // Factory method to convert JSON into a JobListing object
   factory JobListingEntity.fromJson(Map<String, dynamic> json) {
+    final imageVal = (json['image'] ?? json['profile_pic'] ?? '').toString();
     return JobListingEntity(
-      id: json['id'],
-      createdAt: json['created_at'],
-      jobTitle: json['job_title'],
-      jobDesc: json['job_desc'],
-      type: json['type'],
-      companyName: json['company_name'],
-      location: json['location'],
-      profilePic: json['profile_pic'] ?? '', // handle null case
-      salary: json['salary'],
-      level: json['level'],
-      workingModel: json['working_model'],
-      tags: json['tags'],
-      image: json['image'].isNotEmpty
-          ? json['image']
-          : 'https://bbekokmtumrrmjbohsdv.supabase.co/storage/v1/object/public/profiles//microsoft_PNG13.webp', // default image URL
+      id: parseIntId(json['id']),
+      createdAt: formatTimestamp(json['created_at']),
+      jobTitle: json['job_title']?.toString() ?? '',
+      jobDesc: json['job_desc']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      companyName: json['company_name']?.toString() ?? '',
+      location: json['location']?.toString() ?? '',
+      profilePic: json['profile_pic']?.toString() ?? '',
+      salary: json['salary']?.toString() ?? '',
+      level: json['level']?.toString() ?? '',
+      workingModel: json['working_model']?.toString() ?? '',
+      tags: json['tags']?.toString() ?? '',
+      image: imageVal.isNotEmpty ? imageVal : AppConstants.defaultCompanyLogo,
+      recruiterId: (json['recruiter_id'] ?? '').toString(),
+      isActive: json['is_active'] != false,
     );
   }
 
-  // Method to convert a JobListing object into JSON (useful for inserting data)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -66,6 +72,44 @@ class JobListingEntity {
       'level': level,
       'tags': tags,
       'image': image,
+      'recruiter_id': recruiterId,
+      'is_active': isActive,
     };
+  }
+
+  JobListingEntity copyWith({
+    int? id,
+    String? createdAt,
+    String? jobTitle,
+    String? jobDesc,
+    String? type,
+    String? companyName,
+    String? location,
+    String? profilePic,
+    String? salary,
+    String? workingModel,
+    String? level,
+    String? tags,
+    String? image,
+    String? recruiterId,
+    bool? isActive,
+  }) {
+    return JobListingEntity(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      jobTitle: jobTitle ?? this.jobTitle,
+      jobDesc: jobDesc ?? this.jobDesc,
+      type: type ?? this.type,
+      companyName: companyName ?? this.companyName,
+      location: location ?? this.location,
+      profilePic: profilePic ?? this.profilePic,
+      salary: salary ?? this.salary,
+      workingModel: workingModel ?? this.workingModel,
+      level: level ?? this.level,
+      tags: tags ?? this.tags,
+      image: image ?? this.image,
+      recruiterId: recruiterId ?? this.recruiterId,
+      isActive: isActive ?? this.isActive,
+    );
   }
 }

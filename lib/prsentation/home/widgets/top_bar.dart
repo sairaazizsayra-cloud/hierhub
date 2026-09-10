@@ -1,8 +1,10 @@
 import "package:flutter/material.dart";
-import "package:flutter/widgets.dart";
+import "package:job_seeker/core/constants.dart";
+import "package:job_seeker/core/theme/app_theme.dart";
 import "package:job_seeker/core/widget/my_custom_icon_button.dart";
 import "package:job_seeker/prsentation/auth/provider/auth_provider.dart";
 import "package:job_seeker/prsentation/home/widgets/search_bar_widgets.dart";
+import "package:job_seeker/prsentation/settings/notifications_page.dart";
 import "package:job_seeker/prsentation/user_profile/page/user_profile_page.dart";
 import "package:provider/provider.dart";
 
@@ -15,10 +17,7 @@ class TopBar extends StatelessWidget {
       height: 280,
       alignment: Alignment.topLeft,
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.deepPurple,
-        borderRadius: BorderRadius.circular(12),
-      ),
+      decoration: AppTheme.gradientHeader,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -37,8 +36,9 @@ class TopBar extends StatelessWidget {
                         radius: 25,
                         backgroundColor: Colors.white,
                         backgroundImage: NetworkImage(
-                            context.watch<AuthProvider>().user!.avatar,
-                            scale: 0.025),
+                          _avatarUrl(
+                              context.watch<AuthProvider>().user!.avatar),
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -55,7 +55,12 @@ class TopBar extends StatelessWidget {
                 ),
                 MyCustomIconButton(
                   icon: Icons.notifications,
-                  callback: () {},
+                  callback: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const NotificationsPage(),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -63,7 +68,7 @@ class TopBar extends StatelessWidget {
               height: 20,
             ),
             Text(
-              "Find a Job, \nthat Suits you",
+              "Find a Job \nthat Suits you",
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.w500,
@@ -78,6 +83,10 @@ class TopBar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _avatarUrl(String avatar) {
+    return avatar.isEmpty ? AppConstants.defaultAvatar : avatar;
   }
 
   void _redirectProfile(context) {

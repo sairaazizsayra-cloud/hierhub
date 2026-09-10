@@ -6,7 +6,9 @@ import 'package:job_seeker/prsentation/home/widgets/job_card.dart';
 import 'package:provider/provider.dart';
 
 class RecentJobsSection extends StatelessWidget {
-  const RecentJobsSection({super.key});
+  final VoidCallback? onSeeAll;
+
+  const RecentJobsSection({super.key, this.onSeeAll});
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +21,12 @@ class RecentJobsSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Recent Jobs',
+                'Browse jobs by category',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               TextButton(
-                onPressed: () {},
-                child: const Text('See all'),
+                onPressed: onSeeAll,
+                child: const Text('See all jobs'),
               ),
             ],
           ),

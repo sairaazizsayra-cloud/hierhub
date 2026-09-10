@@ -4,7 +4,9 @@ import 'package:job_seeker/prsentation/home/widgets/job_card.dart';
 import 'package:provider/provider.dart';
 
 class SuggestedJobsSection extends StatelessWidget {
-  const SuggestedJobsSection({super.key});
+  final VoidCallback? onSeeAll;
+
+  const SuggestedJobsSection({super.key, this.onSeeAll});
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +19,13 @@ class SuggestedJobsSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Suggested Jobs',
+                'Latest job openings',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              TextButton(onPressed: () {}, child: const Text('See all')),
+              TextButton(
+                onPressed: onSeeAll,
+                child: const Text('See all jobs'),
+              ),
             ],
           ),
         ),

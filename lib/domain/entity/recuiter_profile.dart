@@ -6,7 +6,6 @@ class RecuiterProfile {
   final String? avatar;
   final String location;
   final String? description;
-
   RecuiterProfile({
     required this.id,
     required this.name,
@@ -16,15 +15,16 @@ class RecuiterProfile {
     required this.description,
     required this.location,
   });
-
   factory RecuiterProfile.fromJson({required json}) {
+    final map = json is Map ? Map<String, dynamic>.from(json) : <String, dynamic>{};
     return RecuiterProfile(
-        id: json["id"],
-        name: json["name"],
-        email: json["email"],
-        organisation: json["organisation"],
-        avatar: json["avatar"],
-        description: json["description"],
-        location: json["location"]);
+      id: (map['id'] ?? '').toString(),
+      name: (map['name'] ?? 'Recruiter').toString(),
+      email: (map['email'] ?? '').toString(),
+      organisation: (map['organisation'] ?? '').toString(),
+      avatar: (map['avatar'] ?? '').toString(),
+      description: (map['description'] ?? '').toString(),
+      location: (map['location'] ?? '').toString(),
+    );
   }
 }

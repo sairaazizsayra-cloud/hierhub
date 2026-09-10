@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:job_seeker/data/datasource/bookmark_jobs_datasource.dart';
-
 class BookMarkJobProvider with ChangeNotifier {
-  BookMarkJobProvider({required datasource}) : _datasource = datasource;
+  BookMarkJobProvider({required dynamic datasource}) : _datasource = datasource;
 
-  final BookmarksJobsDatasource _datasource;
+  final dynamic _datasource;
 
   List<int> _jobs = [];
 

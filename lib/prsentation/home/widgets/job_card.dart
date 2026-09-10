@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "package:job_seeker/core/constants.dart";
+import "package:job_seeker/core/theme/app_theme.dart";
 import "package:job_seeker/prsentation/bookmark/provider/bookmark_jobs_provider.dart";
 import "package:job_seeker/prsentation/job_details/page/job_details_page.dart";
 import "package:provider/provider.dart";
@@ -11,6 +13,7 @@ class JobCard extends StatelessWidget {
   final String salary;
   final List<String> tags;
   final String image;
+  final int? matchPercent;
 
   const JobCard({
     super.key,
@@ -21,6 +24,7 @@ class JobCard extends StatelessWidget {
     required this.salary,
     required this.tags,
     required this.image,
+    this.matchPercent,
   });
 
   @override
@@ -33,8 +37,7 @@ class JobCard extends StatelessWidget {
         );
       },
       child: Container(
-        width: 450,
-        // height: 200,
+        width: 320,
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.only(right: 16, bottom: 16),
         decoration: BoxDecoration(
@@ -46,35 +49,77 @@ class JobCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              children: [
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'JOB OPENING',
+                    style: TextStyle(
+                      color: AppTheme.primary,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                if (matchPercent != null && matchPercent! > 0) ...[
+                  const SizedBox(width: 8),
+                  Text(
+                    '$matchPercent% job match',
+                    style: const TextStyle(
+                      color: AppTheme.primary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(image.isEmpty
-                          ? "https://bbekokmtumrrmjbohsdv.supabase.co/storage/v1/object/public/profiles//microsoft_PNG13.webp" // TODO : unHandle for empty image
-                          : image),
-                      radius: 20,
-                    ),
-                    const SizedBox(
-                      width: 15,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          jobTitle,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          image.isEmpty
+                              ? AppConstants.defaultCompanyLogo
+                              : image,
                         ),
-                        Text(
-                          company,
-                          style:
-                              const TextStyle(fontSize: 14, color: Colors.grey),
+                        radius: 20,
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              jobTitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              company,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
                 Consumer<BookMarkJobProvider>(
                   builder: (context, bookmarkProvider, child) {
@@ -93,13 +138,14 @@ class JobCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            // const SizedBox(height: 10),
             Row(
               children: [
                 const Icon(Icons.location_on, color: Colors.grey, size: 16),
-                Text(
-                  location,
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                Expanded(
+                  child: Text(
+                    location,
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
                 ),
               ],
             ),
@@ -110,7 +156,7 @@ class JobCard extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              "\$ $salary",
+              "Job salary: \$ $salary",
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],

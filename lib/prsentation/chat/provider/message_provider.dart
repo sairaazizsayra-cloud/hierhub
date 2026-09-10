@@ -1,11 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:job_seeker/data/datasource/chat_datasorce.dart';
 import 'package:job_seeker/domain/entity/message_entity.dart';
 
 class MessageProvider extends ChangeNotifier {
-  final ChatDatasource datasource;
+  final dynamic datasource;
 
   List<MessageEntity> messages = [];
   bool isLoading = false;
@@ -38,6 +37,7 @@ class MessageProvider extends ChangeNotifier {
       receiverId: receiverId,
       roomId: roomId,
     );
+    await fetchMessages(roomId);
   }
 
   void subscribeToMessages(String roomId) {

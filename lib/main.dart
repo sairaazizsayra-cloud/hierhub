@@ -1,20 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:job_seeker/core/app_config.dart';
 import 'package:job_seeker/core/dependency_injection.dart';
+import 'package:job_seeker/core/firebase/firebase_init.dart';
+import 'package:job_seeker/core/firebase/firestore_seed.dart';
 import 'package:job_seeker/core/provider_config/mult_provider_config.dart';
-import 'package:job_seeker/core/network_supabase_config.dart';
-import 'package:job_seeker/prsentation/auth/page/auth_gate.dart';
+import 'package:job_seeker/core/theme/app_theme.dart';
+import 'package:job_seeker/prsentation/auth/page/splash_page.dart';
+import 'package:job_seeker/prsentation/setup/firebase_setup_page.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await initialize dotenv
-  // await dotenv.load(fileName: ".env");
+  if (!isFirebaseConfigured) {
+    runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FirebaseSetupPage(
+        error: 'Firebase options missing. Run: flutterfire configure',
+      ),
+    ));
+    return;
+  }
 
-  await supabaseConfig();
-
-  setup();
+  try {
+    await initializeFirebase();
+    AppConfig.useLocalBackend = false;
+    AppConfig.firebaseInitialized = true;
+    await setup();
+    try {
+      await FirestoreSeed.seedJobsIfEmpty();
+    } catch (_) {
+      // Firestore may still be empty until rules/API are ready
+    }
+  } catch (e) {
+    runApp(MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: FirebaseSetupPage(error: e.toString()),
+    ));
+    return;
+  }
 
   runApp(MultiProvider(providers: providers, child: const MyApp()));
 }
@@ -24,19 +50,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, // Makes the status bar transparent
-      statusBarIconBrightness:
-          Brightness.dark, // Adjusts the icon brightness (light or dark)
-    ));
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
       ),
-      home: const AuthGate(),
+    );
+    return MaterialApp(
+      title: 'HireHub',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const SplashPage(),
     );
   }
 }
