@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:job_seeker/core/theme/app_theme.dart';
 import 'package:job_seeker/domain/entity/job_listing_entity.dart';
+import 'package:job_seeker/prsentation/auth/page/login_page.dart';
 import 'package:job_seeker/prsentation/auth/provider/auth_provider.dart';
 import 'package:job_seeker/prsentation/home/provider/job_list_provider.dart';
 import 'package:job_seeker/prsentation/home/widgets/job_card.dart';
@@ -22,6 +23,16 @@ class _JobDetailsContentState extends State<JobDetailsContent> {
   JobListingEntity get job => widget.job;
 
   void _showApplySheet() {
+    final auth = context.read<AuthProvider>();
+    if (auth.user == null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+      );
+      return;
+    }
+    if (auth.isRecruiter) return;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -185,8 +196,10 @@ class _JobDetailsContentState extends State<JobDetailsContent> {
                 child: Text(
                   context.watch<AuthProvider>().isRecruiter
                       ? 'Recruiters cannot apply to jobs'
-                      : 'Apply for this Job',
-                  style: TextStyle(
+                      : context.watch<AuthProvider>().user == null
+                          ? 'Log in to apply'
+                          : 'Apply for this Job',
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Colors.white,
                     fontWeight: FontWeight.w600,

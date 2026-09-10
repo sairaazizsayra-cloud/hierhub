@@ -1,11 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:job_seeker/core/theme/app_theme.dart';
+import 'package:job_seeker/core/user_role.dart';
 import 'package:job_seeker/core/widget/app_logo.dart';
 import 'package:job_seeker/prsentation/auth/page/login_page.dart';
 import 'package:job_seeker/prsentation/auth/page/ragister_page.dart';
+import 'package:job_seeker/prsentation/explore/page/guest_jobs_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
+
+  void _openBrowse(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const GuestJobsPage()),
+    );
+  }
+
+  void _openRegister(BuildContext context, String role) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => RagisterPage(initialRole: role)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,11 +74,25 @@ class WelcomePage extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      _roleHint(Icons.work_outline, 'Browse jobs'),
+                      _roleHint(
+                        icon: Icons.work_outline,
+                        label: 'Browse jobs',
+                        onTap: () => _openBrowse(context),
+                      ),
                       const SizedBox(width: 8),
-                      _roleHint(Icons.badge_outlined, 'Apply to jobs'),
+                      _roleHint(
+                        icon: Icons.badge_outlined,
+                        label: 'Apply to jobs',
+                        onTap: () =>
+                            _openRegister(context, UserRole.jobSeeker),
+                      ),
                       const SizedBox(width: 8),
-                      _roleHint(Icons.campaign_outlined, 'Post jobs'),
+                      _roleHint(
+                        icon: Icons.campaign_outlined,
+                        label: 'Post jobs',
+                        onTap: () =>
+                            _openRegister(context, UserRole.recruiter),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -88,9 +118,9 @@ class WelcomePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      onPressed: () => Navigator.push(
+                      onPressed: () => _openRegister(
                         context,
-                        MaterialPageRoute(builder: (_) => const RagisterPage()),
+                        UserRole.jobSeeker,
                       ),
                       child: const Text('Create Job Account'),
                     ),
@@ -104,24 +134,35 @@ class WelcomePage extends StatelessWidget {
     );
   }
 
-  Widget _roleHint(IconData icon, String label) {
+  Widget _roleHint({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: AppTheme.primary.withValues(alpha: 0.08),
+      child: Material(
+        color: AppTheme.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: AppTheme.primary, size: 20),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Column(
+              children: [
+                Icon(icon, color: AppTheme.primary, size: 20),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

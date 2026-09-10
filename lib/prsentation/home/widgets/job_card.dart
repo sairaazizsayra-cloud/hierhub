@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import "package:job_seeker/core/constants.dart";
 import "package:job_seeker/core/theme/app_theme.dart";
+import "package:job_seeker/prsentation/auth/page/login_page.dart";
+import "package:job_seeker/prsentation/auth/provider/auth_provider.dart";
 import "package:job_seeker/prsentation/bookmark/provider/bookmark_jobs_provider.dart";
 import "package:job_seeker/prsentation/job_details/page/job_details_page.dart";
 import "package:provider/provider.dart";
@@ -130,6 +132,15 @@ class JobCard extends StatelessWidget {
                         color: Colors.purple,
                       ),
                       onPressed: () {
+                        if (context.read<AuthProvider>().user == null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginPage(),
+                            ),
+                          );
+                          return;
+                        }
                         bookmarkProvider.toggleBookmark(id);
                       },
                     );

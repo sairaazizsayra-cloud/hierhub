@@ -11,7 +11,12 @@ import 'package:job_seeker/prsentation/auth/widgets/prompt_login_sigup_widget.da
 import 'package:provider/provider.dart';
 
 class RagisterPage extends StatefulWidget {
-  const RagisterPage({super.key});
+  final String initialRole;
+
+  const RagisterPage({
+    super.key,
+    this.initialRole = UserRole.jobSeeker,
+  });
 
   @override
   State<RagisterPage> createState() => _RagisterPageState();
@@ -21,7 +26,7 @@ class _RagisterPageState extends State<RagisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  String _role = UserRole.jobSeeker;
+  late String _role = widget.initialRole;
 
   @override
   void dispose() {
@@ -41,8 +46,10 @@ class _RagisterPageState extends State<RagisterPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const SizedBox(height: 80),
-            const AuthHeaderWidget(
-              text: "Join as seeker or recruiter",
+            AuthHeaderWidget(
+              text: _role == UserRole.recruiter
+                  ? "Post jobs and hire candidates"
+                  : "Join as seeker or recruiter",
               title: "Register",
             ),
             const SizedBox(height: 20),
