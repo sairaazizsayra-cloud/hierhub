@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:job_seeker/core/theme/app_theme.dart';
 
 class PromptLoginSignUpWidget extends StatelessWidget {
   final String text;
@@ -25,7 +26,7 @@ class PromptLoginSignUpWidget extends StatelessWidget {
             onPressed: onPressed,
             child: Text(
               promptText,
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20, color: AppTheme.primary),
             ))
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:job_seeker/core/theme/app_theme.dart';
 
 class AppLogo extends StatelessWidget {
   final double height;
@@ -59,11 +60,11 @@ class _HireHubFallback extends StatelessWidget {
               children: const [
                 TextSpan(
                   text: 'Hire',
-                  style: TextStyle(color: Color(0xFF4C6FFF)),
+                  style: TextStyle(color: AppTheme.primary),
                 ),
                 TextSpan(
                   text: 'Hub',
-                  style: TextStyle(color: Color(0xFF22D3EE)),
+                  style: TextStyle(color: AppTheme.accent),
                 ),
               ],
             ),
@@ -79,8 +80,8 @@ class _HireHubMarkPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final cyan = Paint()..color = const Color(0xFF22D3EE);
-    final blue = Paint()..color = const Color(0xFF4C6FFF);
+    final lightPurple = Paint()..color = AppTheme.accent;
+    final purple = Paint()..color = AppTheme.primary;
     final w = size.width;
     final h = size.height;
 
@@ -90,7 +91,7 @@ class _HireHubMarkPainter extends CustomPainter {
       ..lineTo(w * 0.38, h * 0.90)
       ..lineTo(w * 0.20, h * 0.90)
       ..close();
-    canvas.drawPath(leftBar, cyan);
+    canvas.drawPath(leftBar, lightPurple);
 
     final rightBar = Path()
       ..moveTo(w * 0.62, h * 0.10)
@@ -98,7 +99,7 @@ class _HireHubMarkPainter extends CustomPainter {
       ..lineTo(w * 0.80, h * 0.90)
       ..lineTo(w * 0.62, h * 0.90)
       ..close();
-    canvas.drawPath(rightBar, cyan);
+    canvas.drawPath(rightBar, lightPurple);
 
     final ribbon = Path()
       ..moveTo(w * 0.20, h * 0.58)
@@ -108,7 +109,7 @@ class _HireHubMarkPainter extends CustomPainter {
       ..lineTo(w * 0.42, h * 0.64)
       ..lineTo(w * 0.20, h * 0.78)
       ..close();
-    canvas.drawPath(ribbon, blue);
+    canvas.drawPath(ribbon, purple);
   }
 
   @override

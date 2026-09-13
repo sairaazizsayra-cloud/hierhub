@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:job_seeker/core/theme/app_theme.dart';
 import 'package:job_seeker/core/widget/my_custom_icon_button.dart';
 import 'package:job_seeker/prsentation/auth/provider/auth_provider.dart';
 import 'package:job_seeker/prsentation/auth/widgets/my_custom_input_filed.dart';
@@ -129,7 +130,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
       child: Scaffold(
         body: Container(
           width: double.infinity,
-          color: Colors.deepPurple,
+          color: AppTheme.primary,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -246,7 +247,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                           builder: (context, authProvider, _) {
                             return ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple,
+                                backgroundColor: AppTheme.primary,
                                 minimumSize: const Size(double.infinity, 50),
                               ),
                               onPressed:

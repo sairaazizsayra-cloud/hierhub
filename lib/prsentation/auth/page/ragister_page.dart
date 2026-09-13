@@ -41,7 +41,7 @@ class _RagisterPageState extends State<RagisterPage> {
     return Scaffold(
       body: Container(
         width: double.infinity,
-        color: Colors.deepPurple,
+        color: AppTheme.primary,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -93,7 +93,7 @@ class _RagisterPageState extends State<RagisterPage> {
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.deepPurple.shade100,
+                                color: AppTheme.primary.withValues(alpha: 0.18),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),

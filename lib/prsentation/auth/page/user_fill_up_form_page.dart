@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:job_seeker/core/theme/app_theme.dart';
 import 'package:job_seeker/core/user_role.dart';
 import 'package:job_seeker/domain/entity/user_entity.dart';
 import 'package:job_seeker/prsentation/auth/provider/auth_provider.dart';
@@ -75,7 +76,7 @@ class _UserFillUpFormPageState extends State<UserFillUpFormPage> {
       child: Scaffold(
         body: Container(
           width: double.infinity,
-          color: Colors.deepPurple,
+          color: AppTheme.primary,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -110,7 +111,7 @@ class _UserFillUpFormPageState extends State<UserFillUpFormPage> {
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
-                                      color: Colors.deepPurple.shade100,
+                                      color: AppTheme.primary.withValues(alpha: 0.18),
                                       blurRadius: 20,
                                       offset: const Offset(0, 10))
                                 ]),

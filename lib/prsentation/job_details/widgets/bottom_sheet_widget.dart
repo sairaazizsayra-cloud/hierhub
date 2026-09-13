@@ -233,7 +233,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                     child: const Text(
                       'View uploaded resume',
                       style: TextStyle(
-                        color: Colors.blue,
+                        color: AppTheme.primary,
                         decoration: TextDecoration.underline,
                       ),
                     ),

@@ -129,7 +129,7 @@ class JobCard extends StatelessWidget {
                     return IconButton(
                       icon: Icon(
                         isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                        color: Colors.purple,
+                        color: AppTheme.primary,
                       ),
                       onPressed: () {
                         if (context.read<AuthProvider>().user == null) {

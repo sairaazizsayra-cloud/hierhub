@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  // Same purple palette as assets/logo.png and assets/app_icon.png.
   static const Color primary = Color(0xFF673AB7);
   static const Color primaryDark = Color(0xFF512DA8);
   static const Color accent = Color(0xFF9575CD);

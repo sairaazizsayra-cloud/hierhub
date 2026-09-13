@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:job_seeker/core/theme/app_theme.dart';
 
 class AuthActionButton extends StatelessWidget {
   final String text;
@@ -15,7 +16,7 @@ class AuthActionButton extends StatelessWidget {
       onPressed: onPressed,
       height: 50,
       // margin: EdgeInsets.symmetric(horizontal: 50),
-      color: Colors.deepPurple,
+      color: AppTheme.primary,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(50),
       ),
